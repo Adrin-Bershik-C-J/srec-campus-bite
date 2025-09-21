@@ -1,24 +1,17 @@
 package com.srec.fc.entity;
 
 import com.srec.fc.enums.Role;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class User {
 
     @Id
@@ -37,4 +30,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    // For students/staff → their orders
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders;
+
+    // For providers → one user ↔ one provider profile
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Provider providerProfile;
 }

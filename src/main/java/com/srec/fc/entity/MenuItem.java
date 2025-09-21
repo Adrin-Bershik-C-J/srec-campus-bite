@@ -5,9 +5,9 @@ import lombok.*;
 
 @Entity
 @Table(name = "menu_items")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Builder
 public class MenuItem {
 
@@ -26,5 +26,5 @@ public class MenuItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "provider_id", nullable = false)
-    private User provider;
+    private Provider provider;
 }

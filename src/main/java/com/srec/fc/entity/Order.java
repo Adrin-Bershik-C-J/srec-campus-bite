@@ -2,17 +2,16 @@ package com.srec.fc.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.srec.fc.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.srec.fc.enums.OrderStatus;
-
 @Entity
 @Table(name = "orders")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Builder
 public class Order {
 
@@ -24,9 +23,11 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
