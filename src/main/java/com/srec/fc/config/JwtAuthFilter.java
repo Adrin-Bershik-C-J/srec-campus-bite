@@ -1,6 +1,5 @@
 package com.srec.fc.config;
 
-import com.srec.fc.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +20,6 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepo;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

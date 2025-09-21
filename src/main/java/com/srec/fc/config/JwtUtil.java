@@ -1,7 +1,9 @@
 package com.srec.fc.config;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -10,10 +12,16 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "verysecretkeyverysecretkeyverysecretkey123"; // TODO: move to config
-    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    @Value("${jwt.secret}")
+    private String SECRET;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    @Value("${jwt.expiration}")
+    private long EXPIRATION;
+
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(String rollNo, String role) {
         return Jwts.builder()
@@ -21,7 +29,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -35,16 +43,16 @@ public class JwtUtil {
 
     public boolean isTokenValid(String token) {
         try {
-            parseClaims(token);
-            return true;
-        } catch (JwtException e) {
+            Claims claims = parseClaims(token);
+            return claims.getExpiration().after(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
