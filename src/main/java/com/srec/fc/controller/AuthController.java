@@ -28,4 +28,10 @@ public class AuthController {
 
         return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
     }
+
+    //forget password
+
+    //register for guest
+
+    //verify otp
 }
