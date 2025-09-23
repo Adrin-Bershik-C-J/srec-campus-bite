@@ -4,6 +4,7 @@ import com.srec.fc.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    // college roll number (nullable for guests)
+    @Column(nullable = true, unique = true)
     private String rollNo;
 
     @Column(nullable = false)
@@ -31,11 +33,21 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    // For students/staff → their orders
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
+    // guest email (nullable for college users)
+    @Column(unique = true)
+    private String email;
 
-    // For providers → one user ↔ one provider profile
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    // OTP verification flag for guests
+    private Boolean emailVerified;
+
+    // optional google id for OAuth2 logins (nullable)
+    private String googleId;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
+
+    // provider profile if this user is a provider (1:1)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Provider providerProfile;
 }

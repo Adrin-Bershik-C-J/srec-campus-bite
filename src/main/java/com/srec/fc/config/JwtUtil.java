@@ -23,9 +23,9 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String rollNo, String role) {
+    public String generateToken(String subject, String role) {
         return Jwts.builder()
-                .setSubject(rollNo)
+                .setSubject(subject) // can be rollNo or email
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
@@ -33,7 +33,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String extractRollNo(String token) {
+    public String extractSubject(String token) {
         return parseClaims(token).getSubject();
     }
 

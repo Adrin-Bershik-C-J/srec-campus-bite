@@ -1,12 +1,9 @@
 package com.srec.fc.controller;
 
-import com.srec.fc.config.JwtUtil;
 import com.srec.fc.dto.*;
-import com.srec.fc.entity.User;
-import com.srec.fc.repository.UserRepository;
+import com.srec.fc.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,24 +11,22 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authManager;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepo;
+    private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getRollNo(), request.getPassword()));
-
-        User user = userRepo.findByRollNo(request.getRollNo()).orElseThrow();
-        String token = jwtUtil.generateToken(user.getRollNo(), user.getRole().name());
-
-        return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
+    @PostMapping("/guest-register")
+    public ResponseEntity<String> guestRegister(@RequestBody GuestRegisterRequest req) {
+        return ResponseEntity.ok(authService.registerGuest(req));
     }
 
-    //forget password
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpRequest req) {
+        return ResponseEntity.ok(authService.verifyOtp(req));
+    }
 
-    //register for guest
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
+        return ResponseEntity.ok(authService.login(req));
+    }
 
-    //verify otp
+    // TODO: add forget-password endpoint later
 }

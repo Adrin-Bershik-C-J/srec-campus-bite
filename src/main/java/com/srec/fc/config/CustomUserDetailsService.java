@@ -13,12 +13,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String rollNo) throws UsernameNotFoundException {
-        User user = userRepo.findByRollNo(rollNo)
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        // Try rollNo first, then email
+        User user = userRepo.findByRollNo(identifier)
+                .or(() -> userRepo.findByEmail(identifier))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getRollNo())
+                .withUsername(identifier) // keep identifier so AuthenticationManager uses same principal
                 .password(user.getPassword())
                 .roles(user.getRole().name())
                 .build();
