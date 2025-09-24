@@ -15,7 +15,12 @@ public class AuthController {
 
     @PostMapping("/guest-register")
     public ResponseEntity<String> guestRegister(@RequestBody GuestRegisterRequest req) {
-        return ResponseEntity.ok(authService.registerGuest(req));
+        try {
+            return ResponseEntity.ok(authService.registerGuest(req));
+        } catch (Exception e) {
+            e.printStackTrace(); // log real cause
+            return ResponseEntity.status(500).body("Unexpected error occurred: " + e.getMessage());
+        }
     }
 
     @PostMapping("/verify-otp")
